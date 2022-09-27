@@ -4,6 +4,7 @@ const pupsBaseUrl = ' http://localhost:3000/pups';
 //on page load, work work work
 document.addEventListener("DOMContentLoaded", () => {
     getAllPups();
+    filterGoodDogs();
 });
 
 function getAllPups(){
@@ -96,5 +97,40 @@ function toggleGoodDog(event){
             .then(obj => {
                 button.innerHTML = "Good Dog!";
             })
+    }
+}
+
+//On button click, text changes from "Filter good dogs: OFF" to "Filter good dogs: ON", vice versa
+//If filter is on, the Dog Bar only shows good doggos
+//Otherwise show all doggos
+function filterGoodDogs(){
+    const filterBtn = document.getElementById('good-dog-filter');
+
+    //listen to click event
+    filterBtn.addEventListener("click", filterGoodDogsHandler);
+}
+
+function filterGoodDogsHandler(event){
+    console.log(event.target);
+    let filterBtn = event.target;
+    let dogBar = document.getElementById('dog-bar');
+
+    if (filterBtn.innerText === "Filter good dogs: OFF"){
+        filterBtn.innerText = "Filter good dogs: ON";
+
+        dogBar.innerHTML = '';
+        //fetch all pups and filter to good dogs only
+        fetch(pupsBaseUrl)
+        .then(res => res.json())
+        .then(pupsData => {
+            console.log(pupsData);
+            const filteredPupData = pupsData.filter(pupData => pupData.isGoodDog === true)
+            filteredPupData.forEach(goodPupData => renderdogBar(goodPupData));
+        });
+    }
+    else {
+        filterBtn.innerText = "Filter good dogs: OFF";
+        dogBar.innerHTML = '';
+        getAllPups();
     }
 }
